@@ -5,7 +5,7 @@ int Sum(int a, int b){
 }
 
 int main(){
-    std::cout<<"Hello Wordl!"<<std::endl;
+    std::cout<<"Hello World!"<<std::endl;
     std::cout<<Sum(4,8);
     return 0;
 
