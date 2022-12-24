@@ -1,8 +1,11 @@
-
+#include"hello.hpp"
 #include<iostream>
 
-int main(){
-    std::cout<<"Hello, world!"<<std::endl;
+void hello(){
 
-    return 0;
-}
+    setlocale(LC_ALL, "rus");
+
+    std::cout<<"Hello, world!"<<std::endl;
+    std::cout<<"PRIVET";
+
+    }
