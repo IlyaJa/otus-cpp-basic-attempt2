@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
 
-project(01.hello_world)
+project(hello_world CXX)
 
 add_executable(hello_world 
     main.cpp
@@ -10,13 +10,10 @@ add_executable(hello_world
     move_me.h
 )
 
-set_target_properties(hello_world PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED ON
-)
+target_compile_features(hello_world PUBLIC cxx_std_17)
 
 if(MSVC)
-    target_compile_options(HomeWork2 PUBLIC /W4 /WX)
+    target_compile_options(hello_world PUBLIC /W4 /WX)
 else()
-    target_compile_options(HomeWork2 PUBLIC -Wall -Wextra -Werror -pedantic)
+    target_compile_options(hello_world PUBLIC -Wall -Wextra -Werror -pedantic)
 endif()
