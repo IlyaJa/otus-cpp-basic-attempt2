@@ -1,0 +1,9 @@
+Ivan 3
+Semen 6
+Oleg 4
+Karl 3
+Ivan 1
+Semen 1
+Oleg 1
+Marat 3
+Lena 1
