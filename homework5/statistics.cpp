@@ -1,20 +1,20 @@
 #include <iostream>
 #include <limits>
-#include <chrono>
+//#include <chrono>
 #include<vector>
 #include<numeric>
 #include <algorithm> 
 
 
-void Funct();
-double Time();
+//void Funct();
+//double Time();
 
 class IStatistics {
 public:
 	virtual ~IStatistics() {}
 
-	virtual void update(const std::vector<double> &vec) = 0;
-	virtual double eval() const = 0;
+	virtual void update(double next) = 0;
+	virtual double eval() = 0;
 	virtual const char * name() const = 0;
 };
 
@@ -24,11 +24,13 @@ public:
 	Min() : m_min{std::numeric_limits<double>::max()} {
 	}
 
-	void update(const std::vector<double> &vec) override {
-		m_min=*std::min_element(vec.begin(), vec.end());
+	void update(double next) override {
+		if(next<m_min){
+			m_min = next;
+		}
 	}
 
-	double eval() const override {
+	double eval() override {
 		return m_min;
 	}
 
@@ -42,15 +44,18 @@ private:
 
 class Max : public IStatistics {
 public:
-	Max() : m_max{std::numeric_limits<double>::min()} {
+	Max() : m_max{std::numeric_limits<double>::lowest()} {
 	}
 
-	void update(const std::vector<double> &vec) override {
-		m_max=*std::max_element(vec.begin(), vec.end());
+	void update(double next) override {
+		if(next>m_max){
+			m_max = next;
 		}
+
+	}
 	
 
-	double eval() const override {
+	double eval() override {
 		return m_max;
 	}
 
@@ -64,19 +69,19 @@ private:
 
 class Mean : public IStatistics{
 	public:	
-	Mean() : m_mean{ 0 } {
-	}	
+	Mean() : m_mean{ 0 } {}
+		
 	double Sum=0;
-	void update (const std::vector<double> &vec)override {
-     
+	int size=0;
+	void update (double next)override {
+     ++size;
 	 //double Sum = std::accumulate(vec.begin(), vec.end(), 0);
-	 for (int i = 0; i < vec.size(); ++i) {
-			Sum += vec[i];} 
+	 Sum+=next;
 	 
-	 m_mean=Sum/vec.size();
+	 m_mean=Sum/size;
 	}
 
-	double eval() const override {
+	double eval() override {
 		return m_mean;
 	}
 
@@ -90,13 +95,15 @@ class Mean : public IStatistics{
 class Std : public IStatistics 
 {
 public:
-	Std() :m_std{ 0 } {}
+	Std() : m_std{ 0 }, resulst{} {}
+	//Std() : std::vector<double> resulst(0) {}
 	
-	
-	void update(const std::vector<double>& vec) override {
+	void update(double next) override {
+		resulst.push_back(next);
+	}
 		
-		Mean m;
-		m.update(vec);
+		/*Mean m;
+		m.update(next);
 		double mean = m.eval();		
 		double Sum2 = 0;
 		for (int i = 0; i < vec.size(); ++i)
@@ -104,10 +111,19 @@ public:
 			Sum2 += pow((mean - vec[i]), 2);
 		}
 		m_std =sqrt( Sum2 / vec.size());
-	}
+	}*/
 
 
-	double eval() const override {
+	double eval() override {
+		double Sum2=0;
+	    Sum2=std::accumulate(resulst.begin(), resulst.end(), Sum2);
+		double mean2=Sum2/size(resulst);
+		double Sum3=0;
+		for (int i = 0; i < size(resulst); ++i)
+		{
+			Sum3 += pow((mean2 - resulst[i]), 2);
+		}
+		m_std =sqrt( Sum3 /size(resulst));
 		return m_std;
 	}
 
@@ -117,17 +133,18 @@ public:
 
 private:
 	double m_std;
+	std::vector<double> resulst;
 
 };
 
 
 int main() {
 
-	std::vector<double> results;
+	/*std::vector<double> results;
 	int number_results=10;
 	for(int i=0; i<number_results; ++i){
 		results.push_back(Time());
-	}
+	}*/
 
 
 
@@ -138,11 +155,13 @@ int main() {
 	statistics[1] = new Max{};
 	statistics[2] = new Mean{};
 	statistics[3] = new Std{};
-	
-	
+	double val=0;
+
+	while(std::cin>>val){
 		for (size_t i = 0; i < statistics_count; ++i) {
-			statistics[i]->update(results);
+			statistics[i]->update(val);
 		}
+	}
 		
 	
 
@@ -154,7 +173,7 @@ int main() {
 
 	// Print results if any
 	for (size_t i = 0; i < statistics_count; ++i) {
-		std::cout << statistics[i]->name() << " = " << statistics[i]->eval() <<" ms" <<std::endl;
+		std::cout << statistics[i]->name() << " = " << statistics[i]->eval()<<std::endl;
 	}
 
 	// Clear memory - delete all objects created by new
@@ -165,7 +184,7 @@ int main() {
 	return 0;
 }
 
-void Funct() {
+/*void Funct() {
 	int a = 0;
 	int b = 100000000;
 	while (--b) {
@@ -180,4 +199,4 @@ double Time() {
 	std::chrono::duration<double> duration = (endTime - startTime);
 	double result = duration.count();
 	return result;
-}
+}*/
